@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 *.csv
+THRA_isoform_coverage/.DS_Store
+.DS_Store
