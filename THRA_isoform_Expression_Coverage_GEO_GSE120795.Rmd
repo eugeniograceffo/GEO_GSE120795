@@ -108,15 +108,16 @@ data_mosdepth
 
 ```{r}
 ## Let's rearrange the data in a useful way
+## I will keep track of Run as the replicate identifier
 data_mosdepth <- data_mosdepth %>%
-  select(Sample, Isoform = V4, Reads_count =V5) %>%
+  select(Sample, Run, Isoform = V4, Reads_count =V5) %>%
   spread(key="Isoform", value="Reads_count") %>%
   mutate("Package" = as.factor("mosdepth")) 
 
 data_mosdepth
 
 data_bedtools <- data_bedtools %>%
-  select(Sample, Isoform = V4, Reads_count =V5) %>%
+  select(Sample,Run, Isoform = V4, Reads_count =V5) %>%
   spread(key="Isoform", value="Reads_count")%>%
   mutate("Package" = as.factor("bedtools"))
 
@@ -211,6 +212,9 @@ ggsave("Read_counts_9b_tool_comparison.png" , device=png, dpi = 600, path = path
 ### heatmap with continuos delta THRA1vsA2 using mosdepth
 heatmap_data <- filter(dataset_final, Package == "mosdepth")
 
+y_max_mosdepth <- max(heatmap_data$delta_A1vsA2)
+y_min_mosdepth <- min(heatmap_data$delta_A1vsA2)
+
 ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
   geom_tile()+
   ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
@@ -219,7 +223,7 @@ ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
         axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
-  scale_fill_gradient2('delta_reads', limits=c(-350, 350), breaks = c( -350, -150, 0, 150, 350),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
+  scale_fill_gradient2('delta_reads', limits=c(y_min_mosdepth, y_max_mosdepth), breaks = c( y_min_mosdepth, 0, y_max_mosdepth),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
 
 ggsave("Heatmap_THRA1vsA2_mosdepth.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
 ```
@@ -227,6 +231,9 @@ ggsave("Heatmap_THRA1vsA2_mosdepth.png" , device=png, dpi = 600, path = path_plo
 ```{r}
 ### heatmap with continuos delta THRA1vsA2 using bedtools
 heatmap_data <- filter(dataset_final, Package == "bedtools")
+
+y_max_bedtools <- max(heatmap_data$delta_A1vsA2)
+y_min_bedtools <- min(heatmap_data$delta_A1vsA2)
 
 ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
   geom_tile()+
@@ -236,7 +243,7 @@ ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
         axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
-  scale_fill_gradient2('delta_reads', limits=c(-350, 350), breaks = c( -350, -150, 0, 150, 350),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
+  scale_fill_gradient2('delta_reads', limits=c(y_min_bedtools, y_max_bedtools), breaks = c( y_min_bedtools, 0, y_max_bedtools),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
 
 ggsave("Heatmap_THRA1vsA2_bedtools.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
 ```
@@ -288,7 +295,7 @@ ggplot(dataset_final, aes(Package, reorder(Sample,`delta_A1vsA2`) , fill=`delta_
   theme_light(base_size = 12)+
   theme(axis.title.y=element_blank()) +
   theme(axis.title.x=element_blank()) +
-  scale_fill_gradient2('delta', breaks = c(-230, 0,  250),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
+  scale_fill_gradient2('delta', breaks = c(min(y_min_bedtools, y_min_mosdepth), 0,  max(y_max_bedtools,y_max_mosdepth )),  low = "#56B4E9", high = "darksalmon", guide="colorbar")
 
 
 ggsave("Heatmap_methods_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
