@@ -170,10 +170,10 @@ graph_data <- dataset_final %>%
 
 
 ggplot(graph_data, aes(x = Sample, y = Read_counts_9a, fill = Package)) +
-  geom_col( width=0.5, position=position_dodge(width=0.7)) +
+  geom_boxplot( width=0.5, position=position_dodge(width=0.7)) +
   scale_y_continuous("Read counts") +
   scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
-  ggtitle("Tools comparison - Exon 9a - Max values") +
+  ggtitle("Tools comparison - Exon 9a ") +
   theme_light(base_size = 12) +
   scale_x_discrete(guide = guide_axis(angle = -35)) +
   theme(axis.title.x=element_blank())
@@ -185,28 +185,6 @@ ggsave("Read_counts_9a_max_tool_comparison.png" , device=png, dpi = 600, path = 
 ```
 
 
-```{r}
-### Lets do the same with mean values
-graph_data_mean <- graph_data %>%
-  group_by(Sample, Package) %>%
-  summarize(Read_counts_9a=mean(Read_counts_9a))
-
-
-ggplot(graph_data_mean, aes(x = Sample, y = Read_counts_9a, fill = Package)) +
-  geom_col( width=0.5, position=position_dodge(width=0.7)) +
-  scale_y_continuous("Read counts") +
-  scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
-  ggtitle("Tools comparison - Exon 9a - Mean values") +
-  theme_light(base_size = 12) +
-  scale_x_discrete(guide = guide_axis(angle = -35)) +
-  theme(axis.title.x=element_blank())
-
-#ggplotly()
-
-## save plot
-ggsave("Read_counts_9a_mean_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
-```
-
 
 
 ```{r}
@@ -216,40 +194,20 @@ graph_data <- dataset_final %>%
 
 
 ggplot(graph_data, aes(x = Sample, y = Read_counts_9b, fill = Package)) +
-  geom_col( width=0.5, position=position_dodge(width=0.7)) +
+  geom_boxplot( width=0.5, position=position_dodge(width=0.7)) +
   scale_y_continuous("Read counts") +
   scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
-  ggtitle("Tools comparison - Exon 9b - Max values") +
+  ggtitle("Tools comparison - Exon 9b ") +
   theme_light(base_size = 12) +
   scale_x_discrete(guide = guide_axis(angle = -35)) +
   theme(axis.title.x=element_blank())
 
 #ggplotly()
 ## save plot
-ggsave("Read_counts_9b_total_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
+ggsave("Read_counts_9b_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
 ```
 
 
-```{r}
-### Lets do the same with mean values
-graph_data_mean <- graph_data %>%
-  group_by(Sample, Package) %>%
-  summarize(Read_counts_9b=mean(Read_counts_9b))
-
-
-ggplot(graph_data_mean, aes(x = Sample, y = Read_counts_9b, fill = Package)) +
-  geom_col( width=0.5, position=position_dodge(width=0.7)) +
-  scale_y_continuous("Read counts") +
-  scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
-  ggtitle("Tools comparison - Exon 9b - Mean values") +
-  theme_light(base_size = 12) +
-  scale_x_discrete(guide = guide_axis(angle = -35)) +
-  theme(axis.title.x=element_blank())
-
-#ggplotly()
-## save plot
-ggsave("Read_counts_9b_mean_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
-```
 
 
 ```{r}
