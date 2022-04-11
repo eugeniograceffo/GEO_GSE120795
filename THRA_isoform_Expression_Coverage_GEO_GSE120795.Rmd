@@ -212,12 +212,14 @@ ggsave("Read_counts_9b_tool_comparison.png" , device=png, dpi = 600, path = path
 
 ```{r}
 ### heatmap with continuos delta THRA1vsA2 using mosdepth
-heatmap_data <- filter(dataset_final, Package == "mosdepth")
+heatmap_data_mosdepth <- filter(dataset_final, Package == "mosdepth") %>%
+  group_by(Sample, Package) %>%
+  summarize(delta_A1vsA2=round(mean(delta_A1vsA2)))
 
-y_max_mosdepth <- max(heatmap_data$delta_A1vsA2)
-y_min_mosdepth <- min(heatmap_data$delta_A1vsA2)
+y_max_mosdepth <- max(heatmap_data_mosdepth$delta_A1vsA2)
+y_min_mosdepth <- min(heatmap_data_mosdepth$delta_A1vsA2)
 
-ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
+ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
   geom_tile()+
   ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
   theme_light(base_size = 12)+
@@ -232,12 +234,14 @@ ggsave("Heatmap_THRA1vsA2_mosdepth.png" , device=png, dpi = 600, path = path_plo
 
 ```{r}
 ### heatmap with continuos delta THRA1vsA2 using bedtools
-heatmap_data <- filter(dataset_final, Package == "bedtools")
+heatmap_data_bedtools <- filter(dataset_final, Package == "bedtools")%>%
+  group_by(Sample, Package) %>%
+  summarize(delta_A1vsA2=round(mean(delta_A1vsA2)))
 
-y_max_bedtools <- max(heatmap_data$delta_A1vsA2)
-y_min_bedtools <- min(heatmap_data$delta_A1vsA2)
+y_max_bedtools <- max(heatmap_data_bedtools$delta_A1vsA2)
+y_min_bedtools <- min(heatmap_data_bedtools$delta_A1vsA2)
 
-ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
+ggplot(heatmap_data_bedtools, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1vsA2)) +
   geom_tile()+
   ggtitle("THRA isoform expression pattern (THRA1/THRA2) - bedtools") +
   theme_light(base_size = 12)+
@@ -254,9 +258,10 @@ ggsave("Heatmap_THRA1vsA2_bedtools.png" , device=png, dpi = 600, path = path_plo
 
 ```{r}
 ### heatmap with AUT AUT delta THRA1vsA2 using mosdepth
-heatmap_data <- filter(dataset_final, Package == "mosdepth")
+heatmap_data_mosdepth <- heatmap_data_mosdepth %>%
+  mutate("THRA1_higher" = delta_A1vsA2 > 0)
 
-ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
+ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
   geom_tile()+
   ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
   theme_light(base_size = 12)+
@@ -271,9 +276,10 @@ ggsave("Heatmap_THRA1vsA2_AUT_AUT_mosdepth.png" , device=png, dpi = 600, path = 
 
 ```{r}
 ### heatmap with AUT AUT delta THRA1vsA2 using bedtools
-heatmap_data <- filter(dataset_final, Package == "bedtools")
+heatmap_data_bedtools <- heatmap_data_bedtools %>%
+  mutate("THRA1_higher" = delta_A1vsA2 > 0)
 
-ggplot(heatmap_data, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
+ggplot(heatmap_data_bedtools, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
   geom_tile()+
   ggtitle("THRA isoform expression pattern (THRA1/THRA2) - bedtools") +
   theme_light(base_size = 12)+
@@ -290,8 +296,11 @@ ggsave("Heatmap_THRA1vsA2_AUT_AUT_bedtools.png" , device=png, dpi = 600, path = 
 
 ```{r}
 ###Lets compare the methods
+heatmap_data_comparison <- select(dataset_final, Sample, Package, delta_A1vsA2)%>%
+  group_by(Sample, Package) %>%
+  summarize(delta_A1vsA2=round(mean(delta_A1vsA2)))
 
-ggplot(dataset_final, aes(Package, reorder(Sample,`delta_A1vsA2`) , fill=`delta_A1vsA2`)) +
+ggplot(heatmap_data_comparison, aes(Package, reorder(Sample,`delta_A1vsA2`) , fill=`delta_A1vsA2`)) +
   geom_tile()+
   ggtitle("Delta comparison between methods (THRA1/THRA2)") +
   theme_light(base_size = 12)+
