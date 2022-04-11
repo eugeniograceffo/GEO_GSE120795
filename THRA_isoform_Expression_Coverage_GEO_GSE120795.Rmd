@@ -165,11 +165,11 @@ dataset_final
 
 ```{r}
 ### Lets compare the read counts of exon 9a between the 2 tools
-graph_data <- dataset_final %>%
+graph_data_exon9a <- dataset_final %>%
   select(Sample, Package, Read_counts_9a)
 
 
-ggplot(graph_data, aes(x = Sample, y = Read_counts_9a, fill = Package)) +
+ggplot(graph_data_exon9a, aes(x = Sample, y = Read_counts_9a, fill = Package)) +
   geom_boxplot( width=0.5, position=position_dodge(width=0.7)) +
   scale_y_continuous("Read counts") +
   scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
@@ -181,7 +181,7 @@ ggplot(graph_data, aes(x = Sample, y = Read_counts_9a, fill = Package)) +
 #ggplotly()
 
 ## save plot
-ggsave("Read_counts_9a_max_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
+ggsave("Read_counts_9a_tool_comparison.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
 ```
 
 
@@ -189,11 +189,11 @@ ggsave("Read_counts_9a_max_tool_comparison.png" , device=png, dpi = 600, path = 
 
 ```{r}
 ### Lets compare the read counts of exon 9b between the 2 tools
-graph_data <- dataset_final %>%
+graph_data_exon9b <- dataset_final %>%
   select(Sample, Package, Read_counts_9b)
 
 
-ggplot(graph_data, aes(x = Sample, y = Read_counts_9b, fill = Package)) +
+ggplot(graph_data_exon9b, aes(x = Sample, y = Read_counts_9b, fill = Package)) +
   geom_boxplot( width=0.5, position=position_dodge(width=0.7)) +
   scale_y_continuous("Read counts") +
   scale_fill_manual("", values = c("bedtools" = "darksalmon", "mosdepth" = "#56B4E9")) +
