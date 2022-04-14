@@ -87,10 +87,11 @@ for (x in file_links_mosdepth) {
   table_sample <- read.delim(x, header = FALSE) ## read table
   basename_sample <- basename(x)
   table_sample <- mutate(table_sample, "Run"=basename_sample)
-  sum_column <- table_sample$V5
+  treshold_value <- filter(table_sample, V4 == "THRA")
+  treshold_value <- treshold_value$V5
   
   # if statement to filter out samples that have 0 coverage in both exon 9a and 9b
-  if (sum(sum_column)  > 0) {
+  if (treshold_value  > 2) {  ## generally should be at least 4
     data_mosdepth <- bind_rows(data_mosdepth, table_sample)
   }
     
@@ -119,15 +120,17 @@ data_mosdepth
 data_bedtools <- data_bedtools %>%
   select(Sample,Run, Isoform = V4, Reads_count =V5) %>%
   spread(key="Isoform", value="Reads_count")%>%
-  mutate("Package" = as.factor("bedtools"))
+  mutate("Package" = as.factor("bedtools")) %>%
+  filter(Run %in% data_mosdepth$Run) ## makes sure we take only samples that were filtered already
 
 data_bedtools
+
 ```
 
 ```{r}
 ## Let's merge the two dataframes into one
 
-dataset <- full_join(data_mosdepth, data_bedtools)
+dataset <- full_join(data_mosdepth, data_bedtools) 
 
 dataset
 ```
