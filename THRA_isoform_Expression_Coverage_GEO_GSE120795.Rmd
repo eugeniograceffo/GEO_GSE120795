@@ -56,7 +56,7 @@ for (x in file_links_bedtools) {
   sum_column <- table_sample$V5
   
   # if statement to filter out samples that have 0 coverage in both exon 9a and 9b
-  if (sum(sum_column)  > 0) {
+  if (sum(sum_column)  > 4) {
     data_bedtools <- bind_rows(data_bedtools, table_sample)
   }
     
@@ -87,11 +87,12 @@ for (x in file_links_mosdepth) {
   table_sample <- read.delim(x, header = FALSE) ## read table
   basename_sample <- basename(x)
   table_sample <- mutate(table_sample, "Run"=basename_sample)
-  treshold_value <- filter(table_sample, V4 == "THRA")
-  treshold_value <- treshold_value$V5
+  treshold_value <- filter(table_sample, V4 != "THRA") %>%
+    select(V5)
+ # treshold_value <- treshold_value$V5
   
   # if statement to filter out samples that have 0 coverage in both exon 9a and 9b
-  if (treshold_value  > 2) {  ## generally should be at least 4
+  if (sum(treshold_value)  > 4) {  ## generally should be at least 4
     data_mosdepth <- bind_rows(data_mosdepth, table_sample)
   }
     
