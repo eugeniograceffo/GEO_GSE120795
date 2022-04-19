@@ -156,6 +156,7 @@ dataset
 
 dataset_final <- dataset %>%
   mutate("delta_A1vsA2" = THRA1 - THRA2) %>%
+  mutate("THRA1_Percentage" = round(THRA1/Read_counts_9a*100)) %>%
   mutate("THRA1_higher" = THRA1 > THRA2)
 
 dataset_final
@@ -235,6 +236,42 @@ ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,delta_A1vsA2), fill=delta_A1
 
 ggsave("Heatmap_THRA1vsA2_mosdepth.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
 ```
+```{r}
+### heatmap with AUT AUT delta THRA1vsA2 using mosdepth
+heatmap_data_mosdepth <- heatmap_data_mosdepth %>%
+  mutate("THRA1_higher" = delta_A1vsA2 > 0)
+
+ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
+  geom_tile()+
+  ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
+  theme_light(base_size = 12)+
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  scale_fill_manual(values = c("TRUE"= "darksalmon", "FALSE" = "#56B4E9"))
+
+ggsave("Heatmap_THRA1vsA2_AUT_AUT_mosdepth.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
+```
+
+```{r}
+### heatmap of percentages using mosdepth
+heatmap_data_mosdepth <- filter(dataset_final, Package == "mosdepth") %>%
+  group_by(Sample, Package) %>%
+  summarize(THRA1_Percentage=round(mean(THRA1_Percentage)))
+
+ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,THRA1_Percentage), fill=THRA1_Percentage)) +
+  geom_tile()+
+  ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
+  theme_light(base_size = 12)+
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  scale_fill_gradient2('% of THRA1', limits=c(0, 100), breaks = c( 0, 50, 100),  low = "#56B4E9", high = "darksalmon", guide="colorbar",  midpoint = 50)
+
+  ggsave("Heatmap_THRA1vsA2_mosdepth_percentages.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
+```
 
 ```{r}
 ### heatmap with continuos delta THRA1vsA2 using bedtools
@@ -260,23 +297,7 @@ ggsave("Heatmap_THRA1vsA2_bedtools.png" , device=png, dpi = 600, path = path_plo
 
 
 
-```{r}
-### heatmap with AUT AUT delta THRA1vsA2 using mosdepth
-heatmap_data_mosdepth <- heatmap_data_mosdepth %>%
-  mutate("THRA1_higher" = delta_A1vsA2 > 0)
 
-ggplot(heatmap_data_mosdepth, aes(1, reorder(Sample,delta_A1vsA2), fill=THRA1_higher)) +
-  geom_tile()+
-  ggtitle("THRA isoform expression pattern (THRA1/THRA2) - mosdepth") +
-  theme_light(base_size = 12)+
-  theme(axis.title.y=element_blank(),
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  scale_fill_manual(values = c("TRUE"= "darksalmon", "FALSE" = "#56B4E9"))
-
-ggsave("Heatmap_THRA1vsA2_AUT_AUT_mosdepth.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
-```
 
 ```{r}
 ### heatmap with AUT AUT delta THRA1vsA2 using bedtools
