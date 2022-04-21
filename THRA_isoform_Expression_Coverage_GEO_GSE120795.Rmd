@@ -324,6 +324,38 @@ ggplot(heatmap_data_percentage, aes(x=Sample, y=delta_percentage, label=delta_pe
 ```
 
 ```{r}
+### Lets add a graph where the replicates are visible
+heatmap_data_percentage_boxplot <- filter(dataset_final, Package == "mosdepth") %>%
+  select(Sample, THRA1_Percentage)  %>%
+  group_by(Sample) %>%
+  mutate(THRA1_Percentage_mean=round(mean(THRA1_Percentage))) %>%
+  mutate("THRA1_higher" = THRA1_Percentage_mean >50 ) %>%
+  ungroup()
+
+heatmap_data_percentage_boxplot <- heatmap_data_percentage_boxplot[order(heatmap_data_percentage_boxplot$THRA1_Percentage_mean), ]  # sort
+heatmap_data_percentage_boxplot <- mutate(heatmap_data_percentage_boxplot, ID = row_number())
+
+# Diverging Barcharts
+ggplot(heatmap_data_percentage_boxplot, aes(x=reorder(Sample, ID), y=THRA1_Percentage, label=THRA1_Percentage)) + 
+  geom_boxplot(aes(fill=THRA1_higher), width=.5)  +
+   theme_light(base_size = 12)+
+  scale_fill_manual(name="Predominant Isoform", 
+                    labels = c("THRA1", "THRA2"), 
+                    values = c("TRUE"="darksalmon", "FALSE"="#56B4E9")) + 
+  scale_y_continuous("% THRA1" ,limits=c(0, 100))+ 
+  geom_hline(yintercept=50, linetype="dashed", color = "black")+
+  labs(subtitle="Percentage of THRA1 expression over the total of THRA", 
+       title= "THRA isoform expression pattern") + 
+    theme(axis.title.y=element_blank()) +
+  coord_flip()
+
+
+ggsave("THRA1vsA2_mosdepth_percentages_boxplot.png" , device=png, dpi = 600, path = path_plots, bg = "transparent", width = 20, height = 15, units = "cm" )
+
+```
+
+
+```{r}
 ### heatmap with continuos delta THRA1vsA2 using bedtools
 heatmap_data_bedtools <- filter(dataset_final, Package == "bedtools")%>%
   group_by(Sample, Package) %>%
