@@ -338,6 +338,7 @@ heatmap_data_percentage_boxplot <- mutate(heatmap_data_percentage_boxplot, ID = 
 # Diverging Barcharts
 ggplot(heatmap_data_percentage_boxplot, aes(x=reorder(Sample, ID), y=THRA1_Percentage, label=THRA1_Percentage)) + 
   geom_boxplot(aes(fill=THRA1_higher), width=.5)  +
+  #  geom_jitter(color="black", size=0.4, alpha=0.9) +  ## optional in case of a lot of replicates to avoid overlapping of dots
    theme_light(base_size = 12)+
   scale_fill_manual(name="Predominant Isoform", 
                     labels = c("THRA1", "THRA2"), 
