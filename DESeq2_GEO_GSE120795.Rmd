@@ -78,10 +78,10 @@ ggplot(pcaData, aes(PC1, PC2, color=source_name)) +
   theme_light(base_size = 12) 
    # geom_encircle(data = pcaData[pcaData$source_name == "Kidney", ], aes(x=PC1, y=PC2), show.legend = TRUE)    # draw circles, needs library(ggalt) and library(ggfortify)
   
-
+ggsave("PCA_total.png", width = 32, height = 20, units = "cm")
 ggplotly()
 
-ggsave("PCA_total.pdf", width = 32, height = 20, units = "cm")
+
 
 ### Plot all the samples in one big grid
 PCA_single <- ggplot(pcaData, aes(PC1, PC2, color=source_name)) +
@@ -100,14 +100,14 @@ PCA_single <- ggplot(pcaData, aes(PC1, PC2, color=source_name)) +
 
 PCA_single + facet_wrap(~source_name) + theme(legend.position="none") 
 
-ggsave("PCA_single_samples.pdf", width = 32, height = 20, units = "cm")
+ggsave("PCA_single_samples.png", width = 32, height = 20, units = "cm")
 
 
 ### Plot each sample in one single PCA plot
 
 for (sample in pcaData$source_name ) {
 
-  graph_title <- paste0("PCA_", sample, ".pdf")
+  graph_title <- paste0("PCA_", sample, ".png")
   
   PCA_single %+% subset(pcaData, source_name %in% paste(sample))
   
