@@ -17,6 +17,7 @@ library("DESeq2")
 library(tidyverse)
 library(ggrepel)
 library(dplyr)
+library("plotly")
 
 
 
@@ -43,7 +44,7 @@ all(rownames(colData) == colnames(countData))
 ```{r}
 ### Create a DESeqDataSet from count matrix and labels
 dds <- DESeqDataSetFromMatrix(countData = countData, 
-                                colData = colData, design =  ~ Condition)
+                                colData = colData, design =  ~ source_name)
 ```
 ```{r}
 ###
@@ -51,12 +52,96 @@ dds <- DESeqDataSetFromMatrix(countData = countData,
 colData(dds)
 head( counts(dds), 5 )
 ```
+```{r}
+### Principal component analysis to detect outliers in the replicates
+vsd <- vst(dds, blind=FALSE)
+sampleDists <- dist(t(assay(vsd)))
+
+pcaData <- plotPCA(vsd, intgroup=c("source_name"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+#plotPCA(vsd, intgroup=c("source_name"))
+
+x_max_PCA <- max(pcaData$PC1)
+x_min_PCA <- min(pcaData$PC1)
+y_max_PCA <- max(pcaData$PC2)
+y_min_PCA <- min(pcaData$PC2)
+
+
+### Plot one PCA containing all the samples
+
+ggplot(pcaData, aes(PC1, PC2, color=source_name)) +
+  geom_point(size=2.5) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed(xlim = c(x_min_PCA, x_max_PCA), ylim = c(y_min_PCA, y_max_PCA))+
+  theme_light(base_size = 12) 
+   # geom_encircle(data = pcaData[pcaData$source_name == "Kidney", ], aes(x=PC1, y=PC2), show.legend = TRUE)    # draw circles, needs library(ggalt) and library(ggfortify)
+  
+
+ggplotly()
+
+ggsave("PCA_total.pdf", width = 32, height = 20, units = "cm")
+
+### Plot all the samples in one big grid
+PCA_single <- ggplot(pcaData, aes(PC1, PC2, color=source_name)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed(xlim = c(x_min_PCA, x_max_PCA), ylim = c(y_min_PCA, y_max_PCA)) + 
+  theme(legend.position="none") +
+  theme_light(base_size = 12) +
+  geom_text_repel(aes(label =  name),
+                  box.padding   = 0.35, 
+                  point.padding = 0.5,
+                  segment.color = 'grey50',
+                  max.overlaps = 170,
+                  size=2)
+
+PCA_single + facet_wrap(~source_name) + theme(legend.position="none") 
+
+ggsave("PCA_single_samples.pdf", width = 32, height = 20, units = "cm")
+
+
+### Plot each sample in one single PCA plot
+
+for (sample in pcaData$source_name ) {
+
+  graph_title <- paste0("PCA_", sample, ".pdf")
+  
+  PCA_single %+% subset(pcaData, source_name %in% paste(sample))
+  
+  
+  ggsave(graph_title, width = 32, height = 20, units = "cm", path= "~/OneDrive - Charité - Universitätsmedizin Berlin/Schuelke_Lab/EG15_RNA_Seq/GEO_GSE120795/PCA_single_outputs")
+  
+  
+  }
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 #set the reference level
 dds$Condition <- relevel(dds$Condition, ref = "higher_THRA1")
 
-### run DESeq2 and calulate the results
+### run DESeq2 and calculate the results
 dds <- DESeq(dds)
 res <- results(dds)
 res
@@ -118,11 +203,9 @@ pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
  
 ```{r}
 ### clustering
-vsd <- vst(dds, blind=FALSE)
-sampleDists <- dist(t(assay(vsd)))
 
 library("RColorBrewer")
-library("plotly")
+
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(vsd$Condition, vsd$Tissue, sep="-")
 colnames(sampleDistMatrix) <- NULL
@@ -137,40 +220,7 @@ ggsave( "Heatmap.pdf", width = 40, height = 25, units = "cm")
 
 ```
 
-```{r}
-### PCA
-plotPCA(vsd, intgroup=c("Condition"))
 
-plotPCA(vsd, intgroup=c("Tissue"))
-
-pcaData <- plotPCA(vsd, intgroup=c("Condition", "Tissue"), returnData=TRUE)
-percentVar <- round(100 * attr(pcaData, "percentVar"))
-
-ggplot(pcaData, aes(PC1, PC2, color=Condition)) +
-  geom_point(size=3) +
-  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
-  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-  coord_fixed()+
-  geom_text_repel(aes(label = Tissue),
-                  box.padding   = 0.35, 
-                  point.padding = 0.5,
-                  segment.color = 'grey50',
-                  max.overlaps = 100)
-ggsave("PCA.pdf", width = 32, height = 20, units = "cm")
-
-ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Condition)) +
-  geom_point(size=3) +
-  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
-  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-  coord_fixed()+
-  geom_text_repel(aes(label = Tissue),
-                  box.padding   = 0.35, 
-                  point.padding = 0.5,
-                  segment.color = 'grey50') +
-    theme(legend.position="none")
-
-ggplotly()
-```
 ```{r}
 # make screeplot
     ## calculate the variance for each gene

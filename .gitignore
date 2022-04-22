@@ -541,3 +541,30 @@ GEO_GSE120795.Rproj
 THRA_isoform_Expression_Coverage/Heatmap_THRA1vsA2_mosdepth_percentages.png
 THRA_isoform_Expression_Coverage/THRA1vsA2_mosdepth_percentages.png
 THRA_isoform_Expression_Coverage/THRA1vsA2_mosdepth_percentages_boxplot.png
+PCA.pdf
+PCA_single_outputs/PCA_Adrenal gland.pdf
+PCA_single_outputs/PCA_Bladder.pdf
+PCA_single_outputs/PCA_Brain (mixed white and gray matter).pdf
+PCA_single_outputs/PCA_CD138+ enriched bone marrow cells.pdf
+PCA_single_outputs/PCA_Cervix, endometrium.pdf
+PCA_single_outputs/PCA_Cervix.pdf
+PCA_single_outputs/PCA_Colon, epithelium.pdf
+PCA_single_outputs/PCA_Colon.pdf
+PCA_single_outputs/PCA_Esophagus.pdf
+PCA_single_outputs/PCA_Kidney.pdf
+PCA_single_outputs/PCA_Liver.pdf
+PCA_single_outputs/PCA_Lung.pdf
+PCA_single_outputs/PCA_Mammary gland.pdf
+PCA_single_outputs/PCA_Ovary.pdf
+PCA_single_outputs/PCA_Pancreas.pdf
+PCA_single_outputs/PCA_Prostate.pdf
+PCA_single_outputs/PCA_Skeletal muscle.pdf
+PCA_single_outputs/PCA_Skin.pdf
+PCA_single_outputs/PCA_Small intestine.pdf
+PCA_single_outputs/PCA_Stomach.pdf
+PCA_single_outputs/PCA_Thyroid gland.pdf
+PCA_single_outputs/PCA_Tonsil.pdf
+PCA_single_outputs/PCA_Uterus (myometrium).pdf
+PCA_single_outputs/PCA_Whole blood nuclear cells.pdf
+PCA_single_samples.pdf
+PCA_total.pdf
