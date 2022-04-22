@@ -1,10 +1,15 @@
 ---
-title: 'EG15: Transcriptomics analysis'
+title: "THRA Isoform 1 and Isoform 2 Relative Expression"
 output:
   html_document:
+    toc: True
+    toc_float: True
     df_print: paged
 ---
+INTRODUCTION to the Experiment
 
+	A total of 148 solid tissue samples representing 20 organs were taken from post-mortal human healthy donors killed in road accidents no later than 36 hours after death. Prior to RNA extraction solid normal tissue samples were stored either in RNAlater or as Formalin-Fixed Paraffin-Embedded (FFPE) blocks. Blood and bone marrow samples were taken from 6 and 11 healthy volunteers respectively and subjected immediately to RNA extraction. Following ribosomal RNA depletion and RNA libraries construction transcription profiles of the samples were obtained using Illumina HiSeq 3000.
+First-Stranded single-end reads. 50bp. Read counts of THRA exon 9a (Chr17:40089333) and exon 9b (Chr17:40089334)
 
 ```{r}
 ## #load libraries
@@ -14,18 +19,20 @@ library(ggrepel)
 library(dplyr)
 
 
-# test on onedrvire
-
 
 ```
 
 ```{r}
 ### Load gene(/transcript) count matrix and labels
 
-countData <- as.matrix(read.csv("gene_count_matrix_3vs3.csv", row.names="gene_id"))
-colData <- read.csv("metadata.csv", 
-    sep=";",row.names="Sample")
+countData <- as.matrix(read.csv("gene_count_matrix.csv", row.names="gene_id"))
+colData <- read.delim("metadata_GEO_GSE120795.txt", sep=",",row.names="Run")
+
 colData
+
+### countData column names need to be edited. Only the Run number should be used as a name to match colData
+colnames(countData) = str_remove(colnames(countData), '_G.*')  ## the . is essential to disregard the next _ characters
+
 
 ### Check all sample IDs in colData are also in CountData and match their orders
 all(rownames(colData) %in% colnames(countData))
